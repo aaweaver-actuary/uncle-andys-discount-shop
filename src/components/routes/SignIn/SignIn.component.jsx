@@ -10,6 +10,7 @@ import {
   // signInWithEmail,
   createUserDocumentFromAuth,
 } from '../../../utils/firebase/firebase.utils';
+import SignInForm from './SignInForm/SignInForm.component';
 
 const SignIn = () => {
   useEffect(() => {
@@ -34,17 +35,12 @@ const SignIn = () => {
   return (
     <div className="sign-in-container">
       <h1>Sign In</h1>
-      <SignUpForm />
-      <div className="google-sign-in-container">
-        <button className="google-sign-in-button" onClick={logGoogleUser}>
-          Sign In With Google
-        </button>
-        <button
-          className="google-sign-in-button"
-          onClick={signInWithGoogleRedirect}
-        >
-          Sign In With Google Redirect
-        </button>
+      <div className="side-by-side-forms">
+        <SignUpForm />
+        <SignInForm
+          logGoogleUser={logGoogleUser}
+          signInWithGoogleRedirect={signInWithGoogleRedirect}
+        />
       </div>
     </div>
   );

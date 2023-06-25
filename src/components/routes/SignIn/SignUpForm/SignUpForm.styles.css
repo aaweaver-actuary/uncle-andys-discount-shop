@@ -1,0 +1,73 @@
+.sign-up-form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  /* align-items: center; */
+}
+
+h2.sign-up-form-heading {
+  margin: 10px 0;
+}
+
+.sign-up-form-heading {
+  padding-left: 15px;
+}
+
+.sign-up-form-container {
+  display: flex;
+  flex-direction: column;
+}
+
+form.sign-up-form-element {
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+}
+
+input.sign-up-form-input {
+  padding: 12px 20px;
+  margin: 10px;
+  width: 100%;
+  /* width: 500px; */
+}
+
+.input-group {
+  position: relative;
+  margin: 10px 0;
+}
+.input-group.sign-up-form-input {
+  background: none;
+  background-color: white;
+  color: grey;
+  font-size: 18px;
+  padding: 10px 10px 10px 5px;
+  display: block;
+  /* width: 100%; */
+  border: none;
+  outline: none;
+  border-radius: 0;
+  border-bottom: 1px solid grey;
+  margin: 25px 0;
+}
+.input-group.sign-up-form-input:focus {
+  outline: none;
+}
+input[type='password'] {
+  letter-spacing: 0.3em;
+}
+.form-input-label {
+  color: grey;
+  font-size: 16px;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 20px;
+  top: 20px;
+  transition: 200ms ease all;
+}
+
+.form-input-label.shrink {
+  top: -11px;
+  font-size: 12px;
+  color: black;
+}

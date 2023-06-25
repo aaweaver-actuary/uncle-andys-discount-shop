@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import {
-  auth,
+  // auth,
   createUserDocumentFromAuth,
   createAuthUserWithEmailAndPassword,
 } from '../../../../utils/firebase/firebase.utils';
 
-import '../SignIn.styles.css';
+import '../SignUpForm/SignUpForm.styles.css';
+
+import FormInput from '../../../form-input/FormInput.component';
+import Button from '../../../button/Button.component';
 
 const defaultFormFields = {
   displayName: '',
@@ -27,132 +30,76 @@ const SignUpForm = () => {
     setFormFields({ ...formFields, [name]: value });
   };
 
-  const checkPasswordMatch = () => {
-    return password === confirmPassword;
-  };
-
-  const checkIfHasAuthUser = async () => {
-    console.log('SUF-1 checkIfHasAuthUser:\nauth:\n', auth);
-    try {
-      const docResponse = await createUserDocumentFromAuth(auth);
-      console.log('SUF-2 checkIfHasAuthUser:\n docResponse:\n', docResponse);
-      return docResponse;
-    } catch (error) {
-      console.log(
-        'SUF-3 Error creating user (checkIfHasAuthUser)',
-        error.message,
-      );
-      try {
-        const { displayName } = await createAuthUserWithEmailAndPassword(
-          email,
-          password,
-        );
-        console.log('SUF-4 checkIfHasAuthUser:\n displayName:\n', displayName);
-        return displayName;
-      } catch (error1) {
-        console.log(
-          'SUF-5 Error creating user (checkIfHasAuthUser)',
-          error1.message,
-        );
-        return;
-      }
-    }
+  const resetFormFields = () => {
+    setFormFields(defaultFormFields);
   };
 
   // handle submit
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // try to get the user document
-    const userDocRef = await checkIfHasAuthUser();
+    if (password !== confirmPassword) {
+      alert('passwords do not match');
+      return;
+    }
 
-    // confirm password matches
-    if (!checkPasswordMatch()) {
-      console.log(
-        'SUF-6 Passwords do not match:\npassword1:\n',
+    try {
+      const response = await createAuthUserWithEmailAndPassword(
+        email,
         password,
-        '\npassword2:\n',
-        confirmPassword,
       );
-      // alert('Passwords do not match');
-      return;
-    }
-    //see if have authenticated user w/ email and password
-    else if (!userDocRef) {
-      console.log('SUF-8 No user document found');
-      console.log('No user document found\nuserDocRef:\n', userDocRef);
-      return;
-    }
-    // otherwise create new user
-    else {
-      const { displayName, email } = userDocRef;
-      const createdAt = new Date();
-      try {
-        // try to create new user document asynchonously
-        await createUserDocumentFromAuth(userDocRef, {
-          displayName,
-          email,
-          createdAt,
-        });
-      } catch (error) {
-        // catch any errors and log them to the console
-        console.log(
-          'SUF-10 displayName: ',
-          displayName,
-          '\nemail:\n',
-          email,
-          '\ncreatedAt:\n',
-          createdAt,
-          '\nError creating user (handleSubmit):\n',
-          error.message,
-        );
+      // console.log('response', response);
+      const { user } = response;
+
+      // console.log('user', user);
+      await createUserDocumentFromAuth(user, { displayName });
+      resetFormFields();
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        alert('Cannot create user, email already in use');
+      } else {
+        console.log('user creation encountered an error', error);
       }
     }
   };
 
   return (
     <div className="sign-up-form-container">
-      <h3 className="sign-up-form-heading">Sign up:</h3>
+      <h2 className="sign-up-form-heading">Don&apos;t have an account?</h2>
+      <span className="sign-up-form-heading">
+        Sign up with an email and password
+      </span>
       <form onSubmit={(e) => handleSubmit(e)} className="sign-up-form-element">
-        <input
-          required
-          type="text"
-          placeholder="Display Name"
-          onChange={handleChange}
+        <FormInput
+          label="Display Name"
           name="displayName"
           value={displayName}
-          className="sign-up-form-input"
+          handleChange={handleChange}
         />
-        <input
-          required
-          type="email"
-          placeholder="Email"
-          onChange={handleChange}
+        <FormInput
+          label="Email"
           name="email"
           value={email}
-          className="sign-up-form-input"
+          handleChange={handleChange}
+          inputType="email"
         />
-        <input
-          required
-          type="password"
-          placeholder="Password"
-          onChange={handleChange}
+        <FormInput
+          label="Password"
           name="password"
           value={password}
-          className="sign-up-form-input"
+          handleChange={handleChange}
+          inputType="password"
         />
-        <input
-          required
-          type="password"
-          placeholder="Confirm Password"
-          onChange={handleChange}
+        <FormInput
+          label="Confirm Password"
           name="confirmPassword"
           value={confirmPassword}
-          className="sign-up-form-input"
+          handleChange={handleChange}
+          inputType="password"
         />
-        <button type="submit" className="sign-up-form-button">
+        <Button type="submit" buttonType={'default'}>
           Sign Up
-        </button>
+        </Button>
       </form>
     </div>
   );

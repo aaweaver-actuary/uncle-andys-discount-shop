@@ -7,7 +7,13 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  // collection,
+} from 'firebase/firestore';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -50,72 +56,37 @@ export const signInWithGoogleRedirect = () =>
 // FIRESTORE
 export const db = getFirestore(firebaseApp);
 
-export const createUserDocumentFromAuth = async (userAuth) => {
-  // 1. see if existing document exists
-  const userDocRef = doc(db, 'users');
-  console.log('FBU-1', userDocRef);
+export const createUserDocumentFromAuth = async (
+  userAuth,
+  additionalInformation = {},
+) => {
+  if (!userAuth) return;
 
-  // 2. get document snapshot
-  //   --> a document snapshot is an object that contains the data
-  //       from a document in the database
-  //   --> it is used
-  const userDocSnapshot = await getDoc(userDocRef);
-  console.log('FBU-2', userDocSnapshot);
+  const userDocRef = doc(db, 'users', userAuth.uid);
 
-  //   --> check if document exists with .exists() method
-  console.log('FBU-3', userDocSnapshot.exists());
+  const userSnapshot = await getDoc(userDocRef);
 
-  // if user data exists, return it
-  // otherwise, create new user document (with name, email, and date createdAt)
-  if (userDocSnapshot.exists()) {
-    return userDocSnapshot;
-  } else {
-    // create new user document
+  if (!userSnapshot.exists()) {
     const { displayName, email } = userAuth;
     const createdAt = new Date();
+
     try {
-      // try to create new user document asynchonously
       await setDoc(userDocRef, {
         displayName,
         email,
         createdAt,
+        ...additionalInformation,
       });
     } catch (error) {
-      // catch any errors and log them to the console
-      console.log('FBU-4 Error creating user', error.message);
+      console.log('error creating the user', error.message);
     }
   }
 
-  // return user document
   return userDocRef;
 };
 
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
-  try {
-    const userAuth = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
-    console.log('FBU-5 createAuthUserWithEmailAndPassword \n auth: ', auth);
-    console.log('FBU-6 createAuthUserWithEmailAndPassword \n email: ', email);
-    console.log(
-      'FBU-7 createAuthUserWithEmailAndPassword \n password: ',
-      password,
-    );
-    console.log(
-      'FBU-8 createAuthUserWithEmailAndPassword \n userAuth: ',
-      userAuth,
-    );
-    // return userAuth;
-    const userDocRef = await createUserDocumentFromAuth(userAuth);
-    console.log(
-      'FBU-9 createAuthUserWithEmailAndPassword \n userDocRef: ',
-      userDocRef,
-    );
-    return userDocRef;
-  } catch (error) {
-    console.log('FBU-10 Error creating user in step 1', error.message);
-  }
+
+  return await createUserWithEmailAndPassword(auth, email, password);
 };
