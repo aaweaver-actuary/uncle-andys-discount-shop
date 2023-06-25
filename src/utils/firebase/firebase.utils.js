@@ -3,8 +3,9 @@ import {
   getAuth,
   signInWithRedirect,
   signInWithPopup,
-  signInWithEmailAndPassword,
   GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -32,14 +33,15 @@ export const auth = getAuth(firebaseApp);
 
 // 1. Google Authentication
 const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({
-  prompt: 'select_account', // Always prompt for Google account selection.
-});
+// Always prompt for Google account selection.
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
 
 // 2. Email and Password Authentication
-export const signInWithEmail = (email, password) =>
+export const signInWithEmail = (email, password) => {
+  if (!email || !password) return;
   signInWithEmailAndPassword(auth, email, password);
+};
 
 // 3. Google Authentication Redirect
 export const signInWithGoogleRedirect = () =>
@@ -85,4 +87,20 @@ export const createUserDocumentFromAuth = async (userAuth) => {
 
   // return user document
   return userDocRef;
+};
+
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return;
+  try {
+    const { userAuth } = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
+    return userAuth;
+    // userDocRef = await createUserDocumentFromAuth(userAuth);
+    // console.log(userDocRef);
+  } catch (error) {
+    console.log('Error creating user in step 1', error.message);
+  }
 };
