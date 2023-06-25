@@ -17,7 +17,7 @@ const SignIn = () => {
       const response = await getRedirectResult(auth);
       if (response) {
         const userDocRef = await createUserDocumentFromAuth(response.user);
-        console.log(userDocRef);
+        console.log('SI-1', userDocRef);
       }
     };
     func();
@@ -27,18 +27,25 @@ const SignIn = () => {
   const logGoogleUser = async () => {
     const { user } = await signInWithGoogle();
     const userDocRef = await createUserDocumentFromAuth(user);
-    console.log(userDocRef);
+    console.log('SI-2', userDocRef);
   };
 
   // return sign in page
   return (
-    <div>
+    <div className="sign-in-container">
       <h1>Sign In</h1>
       <SignUpForm />
-      <button onClick={logGoogleUser}>Sign In With Google</button>
-      <button onClick={signInWithGoogleRedirect}>
-        Sign In With Google Redirect
-      </button>
+      <div className="google-sign-in-container">
+        <button className="google-sign-in-button" onClick={logGoogleUser}>
+          Sign In With Google
+        </button>
+        <button
+          className="google-sign-in-button"
+          onClick={signInWithGoogleRedirect}
+        >
+          Sign In With Google Redirect
+        </button>
+      </div>
     </div>
   );
 };
