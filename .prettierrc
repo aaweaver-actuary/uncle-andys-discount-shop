@@ -1,0 +1,33 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "jsxBracketSameLine": false,
+  "arrowParens": "always",
+  "endOfLine": "auto",
+  "printWidth": 80,
+  "overrides": [
+    {
+      "files": "*.json",
+      "options": {
+        "printWidth": 200
+      }
+    },
+    {
+      "files": "*.md",
+      "options": {
+        "printWidth": 200
+      }
+    },
+    {
+      "files": "*.scss",
+      "options": {
+        "printWidth": 60
+      }
+    }
+  ],
+  "editor.formatOnSave": true
+}
