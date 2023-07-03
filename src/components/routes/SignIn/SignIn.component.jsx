@@ -1,18 +1,41 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getRedirectResult } from 'firebase/auth';
 
 import SignUpForm from './SignUpForm/SignUpForm.component';
+import SignInForm from './SignInForm/SignInForm.component';
+
+import './SignIn.styles.css';
 
 import {
   auth,
   signInWithGoogle,
-  signInWithGoogleRedirect,
+  // signInWithGoogleRedirect,
   // signInWithEmail,
   createUserDocumentFromAuth,
 } from '../../../utils/firebase/firebase.utils';
-import SignInForm from './SignInForm/SignInForm.component';
+
+const defaultFormFields = {
+  signUp: {
+    displayName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  },
+  signIn: {
+    email: '',
+    password: '',
+  },
+};
 
 const SignIn = () => {
+  // state of the form fields
+  const [signUpFormFields, setSignUpFormFields] = useState(
+    defaultFormFields['signUp'],
+  );
+  const [signInFormFields, setSignInFormFields] = useState(
+    defaultFormFields['signIn'],
+  );
+
   useEffect(() => {
     const func = async () => {
       const response = await getRedirectResult(auth);
@@ -36,10 +59,14 @@ const SignIn = () => {
     <div className="sign-in-container">
       <h1>Sign In</h1>
       <div className="side-by-side-forms">
-        <SignUpForm />
         <SignInForm
           logGoogleUser={logGoogleUser}
-          signInWithGoogleRedirect={signInWithGoogleRedirect}
+          signUpFormFields={signInFormFields}
+          setSignUpFormFields={setSignInFormFields}
+        />
+        <SignUpForm
+          signUpFormFields={signUpFormFields}
+          setSignUpFormFields={setSignUpFormFields}
         />
       </div>
     </div>

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import propTypes from 'prop-types';
+
 import {
   // auth,
   createUserDocumentFromAuth,
@@ -17,10 +18,7 @@ const defaultFormFields = {
   confirmPassword: '',
 };
 
-const SignUpForm = () => {
-  // state of the form fields
-  const [formFields, setFormFields] = useState(defaultFormFields);
-
+const SignUpForm = ({ formFields, setFormFields }) => {
   // destructuring form fields
   const { displayName, email, password, confirmPassword } = formFields;
 
@@ -103,6 +101,11 @@ const SignUpForm = () => {
       </form>
     </div>
   );
+};
+
+SignUpForm.propTypes = {
+  formFields: propTypes.object.isRequired,
+  setFormFields: propTypes.func.isRequired,
 };
 
 export default SignUpForm;

@@ -90,3 +90,59 @@ export const createAuthUserWithEmailAndPassword = async (email, password) => {
 
   return await createUserWithEmailAndPassword(auth, email, password);
 };
+
+const getUserFromFirestoreWithEmail = async (email) => {
+  if (!email) return;
+
+  // try to get the user doc from firestore based on the email
+  const userDocRef = doc(db, 'users', email);
+  const userSnapshot = await getDoc(userDocRef);
+
+  // if the user exists, return the user
+  if (userSnapshot.exists()) {
+    return userSnapshot;
+  } else {
+    return null;
+  }
+};
+
+const lookupEmailAndPasswordFromFirestore = (email, password) => {
+  if (!email || !password) return;
+
+  // try to get the user doc snapshot from firestore based on
+  // the email
+  const userSnapshot = getUserFromFirestoreWithEmail(email);
+
+  // if the user exists, check the password
+  if (userSnapshot) {
+    const { password: passwordFromFirestore } = userSnapshot;
+    if (password === passwordFromFirestore) {
+      return userSnapshot;
+    } else {
+      return null;
+    }
+  }
+};
+
+export const signInWithEmailAndPasswordFromFirestore = async (
+  email,
+  password,
+) => {
+  if (!email || !password) return;
+
+  // try to get the user doc snapshot from firestore based on
+  // the email & password combination, then check that the
+  // password matches
+  const userSnapshot = lookupEmailAndPasswordFromFirestore(email, password);
+
+  // if the user exists, try to sign in with email and password
+  // from firebase auth
+  if (userSnapshot) {
+    try {
+      const userAuth = await signInWithEmailAndPassword(auth, email, password);
+      return userAuth;
+    } catch (error) {
+      console.log('error signing in with email and password', error.message);
+    }
+  }
+};
